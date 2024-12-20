@@ -108,10 +108,10 @@ func main() {
 
     // Serve static files from the web/build directory with correct MIME types
     fs := http.FileServer(http.Dir("./web/build"))
-    r.PathPrefix("/static/").Handler(setCorrectMIMEType(http.StripPrefix("/static/", fs)))
+    r.PathPrefix("/static/").Handler(setCorrectMIMEType(http.StripPrefix("/static", fs)))
 
-    // Simplify index.html serving for React Router fallback
-    r.PathPrefix("/").Handler(setCorrectMIMEType(http.FileServer(http.Dir("./web/build"))))
+    // Serve index.html for any non-static file requests (React Router fallback)
+    r.PathPrefix("/").Handler(setCorrectMIMEType(http.StripPrefix("/", http.FileServer(http.Dir("./web/build")))))
 
     // Determine port and bind address
     port := os.Getenv("PORT")
